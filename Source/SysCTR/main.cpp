@@ -78,7 +78,7 @@ static void Initialize()
 	APT_CheckNew3DS(&isN3DS);
 	osSetSpeedupEnable(true);
 
-	gfxInit(GSP_RGB565_OES, GSP_RGB565_OES, true);
+	gfxInit(GSP_BGR8_OES, GSP_BGR8_OES, true);
 	//gfxSet3D(true);
 
 	pglInit();
