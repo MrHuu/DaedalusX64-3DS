@@ -83,7 +83,13 @@ if [ "$1" = "PSP_RELEASE" ] || [ "$1" = "PSP_DEBUG" ]; then
 elif [ "$1" = "CTR_RELEASE" ]; then
   mkdir "$PWD/daedbuild"
   cd "$PWD/daedbuild"
-  cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles"
+  
+  if [ "$2" = "" ] ; then
+	cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles"
+else
+	cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles" -D"$2"
+fi
+  
   make
 
 elif [ "$1" = "LINUX_RELEASE" ] || [ "$1" = "MAC_RELEASE" ]; then

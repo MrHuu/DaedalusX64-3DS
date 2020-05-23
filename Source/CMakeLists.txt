@@ -356,40 +356,75 @@ if (CTR_RELEASE)
 		-lm
 	)
 
+if (ROM)
+	include(${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/info.cmake)
+
+	set(APP_DESCRIPTION "${PROJECT_NAME} port for 3DS")
+	set(APP_AUTHOR "MasterFeizz")
+	set(APP_ICON "${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/icon.png")
+	set(APP_BANNER "${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/banner.png")
+	set(APP_AUDIO "${PROJECT_SOURCE_DIR}/SysCTR/Resources/audio_silent.wav")
+	set(APP_ROMFS_FILES "${PROJECT_SOURCE_DIR}/SysCTR/Resources/romfs/" "${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/rom.bin")
+	set(APP_ROMFS_DIR  "${CMAKE_BINARY_DIR}/romfs")
+
+	file(MAKE_DIRECTORY ${APP_ROMFS_DIR})
+	file(COPY ${APP_ROMFS_FILES}
+		DESTINATION ${APP_ROMFS_DIR})
+
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}\ -D_ROM_)
+
+else ()
 	set(APP_TITLE "${PROJECT_NAME}")
 	set(APP_DESCRIPTION "${PROJECT_NAME} port for 3DS")
 	set(APP_AUTHOR "MasterFeizz")
-
-	set(APP_SMDH "${PROJECT_SOURCE_DIR}/SysCTR/Resources/daedalus.smdh")
-	set(APP_BANNER "${PROJECT_SOURCE_DIR}/SysCTR/Resources/banner.bnr")
+	set(APP_UNIQUE_ID "0xDAED3")
+	set(APP_ICON "${PROJECT_SOURCE_DIR}/SysCTR/Resources/icon.png")
+	set(APP_BANNER "${PROJECT_SOURCE_DIR}/SysCTR/Resources/banner.png")
 	set(APP_AUDIO "${PROJECT_SOURCE_DIR}/SysCTR/Resources/audio_silent.wav")
+	set(APP_ROMFS_DIR "${PROJECT_SOURCE_DIR}/SysCTR/Resources/romfs")
+endif ()
+
 	set(APP_RSF "${PROJECT_SOURCE_DIR}/SysCTR/Resources/template.rsf")
-	set(APP_ROMFS_DIR "${PROJECT_SOURCE_DIR}/SysCTR/Resources/RomFS")
-	set(APP_ROMFS_BIN "${PROJECT_SOURCE_DIR}/SysCTR/Resources/romfs.bin")
 
 	add_custom_command(
-		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.3dsx
-		COMMAND 3dsxtool ${PROJECT_NAME}.elf ${PROJECT_NAME}.3dsx --romfs=${APP_ROMFS_DIR} --smdh=${APP_SMDH}
-		DEPENDS ${PROJECT_NAME}.elf
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${ROM}.3dsx
+		COMMAND 3dsxtool ${PROJECT_NAME}.elf ${PROJECT_NAME}${ROM}.3dsx --romfs=${APP_ROMFS_DIR} --smdh=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.smdh
+		DEPENDS ${PROJECT_NAME}.elf ${PROJECT_NAME}.smdh
 	)
 
 	add_custom_command(
-		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.cia
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${ROM}.cia
 		COMMAND makerom	-f cia
-				-target t
-				-exefslogo
-				-o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.cia
-				-elf ${PROJECT_NAME}.elf
-				-rsf ${APP_RSF}
-				-banner ${APP_BANNER}
-				-icon ${APP_SMDH}
-				-romfs ${APP_ROMFS_BIN}
-		DEPENDS ${PROJECT_NAME}.elf ${APP_RSF}
+						-target t
+						-exefslogo
+						-o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${ROM}.cia
+						-elf ${PROJECT_NAME}.elf
+						-rsf ${APP_RSF}
+							-DAPP_TITLE=${APP_TITLE}
+							-DAPP_UNIQUE_ID=${APP_UNIQUE_ID}
+							-DAPP_ROMFS_DIR=${APP_ROMFS_DIR}
+						-banner ${PROJECT_NAME}.bnr
+						-icon ${PROJECT_NAME}.smdh
+		DEPENDS ${PROJECT_NAME}.elf ${APP_RSF} ${PROJECT_NAME}.smdh ${PROJECT_NAME}.bnr
+    )
+
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.smdh
+		COMMAND bannertool makesmdh	-o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.smdh
+									-s ${APP_TITLE}
+									-l ${APP_DESCRIPTION}
+									-p ${APP_AUTHOR}
+									-i ${APP_ICON}
+
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bnr
+		COMMAND bannertool makebanner	-o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bnr
+										-i ${APP_BANNER}
+										-a ${APP_AUDIO}
     )
 
 	add_custom_target( N3DS ALL
-		DEPENDS ${PROJECT_NAME}.3dsx
-				${PROJECT_NAME}.cia
+		DEPENDS ${PROJECT_NAME}${ROM}.3dsx
+				${PROJECT_NAME}${ROM}.cia
 	)
 
 endif (CTR_RELEASE)

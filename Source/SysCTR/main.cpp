@@ -74,11 +74,11 @@ static void Initialize()
 	_InitializeSvcHack();
 	aptHook(&_hookCookie, _AptEventHook, NULL);
 	romfsInit();
-	
+
 	APT_CheckNew3DS(&isN3DS);
 	osSetSpeedupEnable(true);
 
-	gfxInit(GSP_BGR8_OES, GSP_BGR8_OES, true);
+	gfxInit(GSP_RGB565_OES, GSP_RGB565_OES, true);
 	//gfxSet3D(true);
 
 	pglInit();
@@ -105,6 +105,7 @@ int main(int argc, char* argv[])
 
 	Initialize();
 	
+#ifndef _ROM_
 	while(shouldQuit == false)
 	{
 		std::string rom = UI::DrawRomSelector();
@@ -114,6 +115,18 @@ int main(int argc, char* argv[])
 		CPU_Run();
 		System_Close();
 	}
+#else
+	while(shouldQuit == false)
+	{
+		sprintf(fullpath, "romfs:/rom.bin");
+
+		System_Open(fullpath);
+		CPU_Run();
+		System_Close();
+
+		shouldQuit=true;
+	}
+#endif
 	
 	System_Finalize();
 	pglExit();
