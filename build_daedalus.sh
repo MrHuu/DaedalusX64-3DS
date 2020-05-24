@@ -85,10 +85,10 @@ elif [ "$1" = "CTR_RELEASE" ]; then
   cd "$PWD/daedbuild"
   
   if [ "$2" = "" ] ; then
-	cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles"
-else
-	cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles" -D"$2"
-fi
+    cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles"
+  else
+    cmake -D"$1=1" ../Source -DCMAKE_TOOLCHAIN_FILE=../Tools/3dstoolchain.cmake -G "Unix Makefiles" -D"$2"
+  fi
   
   make
 

@@ -359,8 +359,6 @@ if (CTR_RELEASE)
 if (ROM)
 	include(${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/info.cmake)
 
-	set(APP_DESCRIPTION "${PROJECT_NAME} port for 3DS")
-	set(APP_AUTHOR "MasterFeizz")
 	set(APP_ICON "${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/icon.png")
 	set(APP_BANNER "${PROJECT_SOURCE_DIR}/SysCTR/Resources/${ROM}/banner.png")
 	set(APP_AUDIO "${PROJECT_SOURCE_DIR}/SysCTR/Resources/audio_silent.wav")
@@ -375,8 +373,6 @@ if (ROM)
 
 else ()
 	set(APP_TITLE "${PROJECT_NAME}")
-	set(APP_DESCRIPTION "${PROJECT_NAME} port for 3DS")
-	set(APP_AUTHOR "MasterFeizz")
 	set(APP_UNIQUE_ID "0xDAED3")
 	set(APP_ICON "${PROJECT_SOURCE_DIR}/SysCTR/Resources/icon.png")
 	set(APP_BANNER "${PROJECT_SOURCE_DIR}/SysCTR/Resources/banner.png")
@@ -384,11 +380,13 @@ else ()
 	set(APP_ROMFS_DIR "${PROJECT_SOURCE_DIR}/SysCTR/Resources/romfs")
 endif ()
 
+	set(APP_AUTHOR "MasterFeizz")
+	set(APP_DESCRIPTION "${PROJECT_NAME} port for 3DS")
 	set(APP_RSF "${PROJECT_SOURCE_DIR}/SysCTR/Resources/template.rsf")
 
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${ROM}.3dsx
-		COMMAND 3dsxtool ${PROJECT_NAME}.elf ${PROJECT_NAME}${ROM}.3dsx --romfs=${APP_ROMFS_DIR} --smdh=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.smdh
+		COMMAND 3dsxtool ${PROJECT_NAME}.elf ${PROJECT_NAME}${ROM}.3dsx --romfs=${APP_ROMFS_DIR} --smdh=${PROJECT_NAME}.smdh
 		DEPENDS ${PROJECT_NAME}.elf ${PROJECT_NAME}.smdh
 	)
 
